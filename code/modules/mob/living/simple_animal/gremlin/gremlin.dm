@@ -63,9 +63,10 @@ GLOBAL_LIST(bad_gremlin_items)
 	var/list/hear_memory = list()
 	var/const/max_hear_memory = 20
 
-/mob/living/simple_animal/hostile/gremlin/Initialize()
+/mob/living/simple_animal/hostile/gremlin/Initialize(mapload)
 	. = ..()
 	AddElement(/datum/element/ventcrawling, given_tier = VENTCRAWLER_ALWAYS)
+	ADD_TRAIT(src, TRAIT_SHOCKIMMUNE, INNATE_TRAIT)
 	access_card = new /obj/item/card/id(src)
 	var/datum/job/captain/C = new /datum/job/captain
 	access_card.access = C.get_access()

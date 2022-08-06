@@ -17,7 +17,7 @@
 	var/overheat_max = 50
 	var/heat_diffusion = 1
 
-/obj/item/minigunpack/Initialize()
+/obj/item/minigunpack/Initialize(mapload)
 	. = ..()
 	gun = new(src)
 	START_PROCESSING(SSfastprocess, src)
@@ -32,7 +32,7 @@
 /obj/item/minigunpack/on_attack_hand(var/mob/living/carbon/user)
 	if(src.loc == user)
 		if(!armed)
-			if(user.get_item_by_slot(SLOT_BACK) == src)
+			if(user.get_item_by_slot(ITEM_SLOT_BACK) == src)
 				armed = 1
 				if(!user.put_in_hands(gun))
 					armed = 0
@@ -114,7 +114,7 @@
 	item_flags = NEEDS_PERMIT | SLOWS_WHILE_IN_HAND
 	var/obj/item/minigunpack/ammo_pack
 
-/obj/item/gun/energy/minigun/Initialize()
+/obj/item/gun/energy/minigun/Initialize(mapload)
 	if(istype(loc, /obj/item/minigunpack)) //We should spawn inside an ammo pack so let's use that one.
 		ammo_pack = loc
 	else

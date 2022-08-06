@@ -108,7 +108,7 @@
 	flags_1 = NONE
 	toolspeed = 0.5
 
-/obj/item/pickaxe/drill/cyborg/Initialize()
+/obj/item/pickaxe/drill/cyborg/Initialize(mapload)
 	. = ..()
 	ADD_TRAIT(src, TRAIT_NODROP, CYBORG_ITEM_TRAIT)
 
@@ -155,7 +155,7 @@
 	attack_verb = list("bashed", "bludgeoned", "thrashed", "whacked")
 	sharpness = SHARP_EDGED
 
-/obj/item/shovel/Initialize()
+/obj/item/shovel/Initialize(mapload)
 	. = ..()
 	AddComponent(/datum/component/butchering, 150, 40) //it's sharp, so it works, but barely.
 
@@ -178,6 +178,12 @@
 	throwforce = 7
 	custom_materials = list(/datum/material/iron=50)
 	w_class = WEIGHT_CLASS_SMALL
+
+/obj/item/shovel/spade/bone
+	name = "bone spade"
+	desc = "A bone spade, suitable for digging and moving dirt."
+	icon_state = "spade_bone"
+	toolspeed = 0.75
 
 /obj/item/shovel/serrated
 	name = "serrated bone shovel"

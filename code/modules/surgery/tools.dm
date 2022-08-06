@@ -48,6 +48,13 @@
 	w_class = WEIGHT_CLASS_TINY
 	toolspeed = 0.5
 
+/obj/item/retractor/ashwalker
+	name = "bontractor"
+	desc = "Kinda looks like a chicken bone."
+	icon = 'icons/obj/mining.dmi'
+	icon_state = "retractor_bone"
+	toolspeed = 0.85
+
 /obj/item/hemostat
 	name = "hemostat"
 	desc = "You think you have seen this before."
@@ -77,6 +84,14 @@
 	w_class = WEIGHT_CLASS_TINY
 	toolspeed = 0.5
 	attack_verb = list("attacked", "pinched")
+
+/obj/item/hemostat/ashwalker
+	name = "femurstat"
+	desc = "Bones that are strapped together with sinews. Used to stop bleeding."
+	icon = 'icons/obj/mining.dmi'
+	icon_state = "hemostat_bone"
+	toolspeed = 0.85
+
 
 /obj/item/cautery
 	name = "cautery"
@@ -108,6 +123,13 @@
 	toolspeed = 0.5
 	attack_verb = list("burnt")
 
+/obj/item/cautery/ashwalker
+	name = "coretery"
+	desc = "A legion core strapped to a bone. It can close wounds."
+	icon = 'icons/obj/mining.dmi'
+	icon_state = "cautery_bone"
+	toolspeed = 0.85
+
 /obj/item/surgicaldrill
 	name = "surgical drill"
 	desc = "You can drill using this item. You dig?"
@@ -138,7 +160,7 @@
 	icon_state = "surgicaldrill_a"
 	hitsound = 'sound/items/welder.ogg'
 
-/obj/item/surgicaldrill/advanced/Initialize()
+/obj/item/surgicaldrill/advanced/Initialize(mapload)
 	. = ..()
 	set_light(1)
 
@@ -192,7 +214,7 @@
 	toolspeed = 1
 	bare_wound_bonus = 20
 
-/obj/item/scalpel/Initialize()
+/obj/item/scalpel/Initialize(mapload)
 	. = ..()
 	AddComponent(/datum/component/butchering, 80 * toolspeed, 100, 0)
 
@@ -213,7 +235,7 @@
 	light_color = LIGHT_COLOR_GREEN
 	sharpness = SHARP_POINTY
 
-/obj/item/scalpel/advanced/Initialize()
+/obj/item/scalpel/advanced/Initialize(mapload)
 	. = ..()
 	set_light(1)
 
@@ -257,6 +279,14 @@
 	user.visible_message("<span class='suicide'>[user] is slitting [user.p_their()] [pick("wrists", "throat", "stomach")] with [src]! It looks like [user.p_theyre()] trying to commit suicide!</span>")
 	return (BRUTELOSS)
 
+/obj/item/scalpel/ashwalker
+	name = "diamond scalpel"
+	desc = "Bones and a Diamond tied together to make a scalpel."
+	icon = 'icons/obj/mining.dmi'
+	icon_state = "scalpel_bone"
+	force = 12
+	toolspeed = 0.85
+
 /obj/item/circular_saw
 	name = "circular saw"
 	desc = "For heavy duty cutting."
@@ -265,7 +295,7 @@
 	lefthand_file = 'icons/mob/inhands/equipment/medical_lefthand.dmi'
 	righthand_file = 'icons/mob/inhands/equipment/medical_righthand.dmi'
 	hitsound = 'sound/weapons/circsawhit.ogg'
-	throwhitsound =  'sound/weapons/pierce.ogg'
+	mob_throw_hit_sound =  'sound/weapons/pierce.ogg'
 	item_flags = SURGICAL_TOOL
 	flags_1 = CONDUCT_1
 	force = 15
@@ -281,7 +311,7 @@
 	wound_bonus = 5
 	bare_wound_bonus = 10
 
-/obj/item/circular_saw/Initialize()
+/obj/item/circular_saw/Initialize(mapload)
 	. = ..()
 	AddComponent(/datum/component/butchering, 40 * toolspeed, 100, 5, 'sound/weapons/circsawhit.ogg') //saws are very accurate and fast at butchering
 
@@ -297,7 +327,7 @@
 	icon = 'icons/obj/surgery.dmi'
 	icon_state = "saw"
 	hitsound = 'sound/weapons/circsawhit.ogg'
-	throwhitsound =  'sound/weapons/pierce.ogg'
+	mob_throw_hit_sound =  'sound/weapons/pierce.ogg'
 	flags_1 = CONDUCT_1
 	force = 10
 	w_class = WEIGHT_CLASS_SMALL
@@ -308,6 +338,14 @@
 	toolspeed = 0.5
 	attack_verb = list("attacked", "slashed", "sawed", "cut")
 	sharpness = SHARP_EDGED
+
+/obj/item/circular_saw/ashwalker
+	name = "diamond bonesaw"
+	desc = "Bones designed like a skull, with diamond teeth to cut through bones."
+	icon = 'icons/obj/mining.dmi'
+	icon_state = "saw_bone"
+	force = 12
+	toolspeed = 0.85
 
 /obj/item/surgical_drapes
 	name = "surgical drapes"
@@ -340,6 +378,13 @@
 		if(id in linked_techweb.researched_designs)
 			prototype = SSresearch.techweb_design_by_id(id)
 			. |= prototype.surgery
+
+
+/obj/item/surgical_drapes/goliath
+	name = "goliath drapes"
+	desc = "Probably not the most hygienic but what the heck else are you gonna use?"
+	icon = 'icons/obj/mining.dmi'
+	icon_state = "surgical_drapes_goli"
 
 /obj/item/organ_storage //allows medical cyborgs to manipulate organs without hands
 	name = "organ storage bag"
@@ -433,3 +478,10 @@
 		to_chat(user, "<span class='warning'>You refrain from hitting [L] with [src], as you are in help intent.</span>")
 		return
 	return ..()
+
+/obj/item/bonesetter/bone
+	name = "bone bonesetter"
+	desc = "A bonesetter made of bones... for setting bones with... bones?"
+	icon = 'icons/obj/mining.dmi'
+	icon_state = "bone setter_bone"
+	toolspeed = 0.85

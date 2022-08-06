@@ -1,7 +1,7 @@
 /datum/job/ai
 	title = "AI"
 	flag = AI_JF
-//	auto_deadmin_role_flags = DEADMIN_POSITION_SILICON
+	auto_deadmin_role_flags = DEADMIN_POSITION_SILICON
 	department_flag = ENGSEC
 	faction = "Station"
 	total_positions = 1
@@ -14,6 +14,7 @@
 	exp_type = EXP_TYPE_CREW
 	exp_type_department = EXP_TYPE_SILICON
 	display_order = JOB_DISPLAY_ORDER_AI
+	allow_bureaucratic_error = FALSE
 	var/do_special_check = TRUE
 	threat = 5
 	considered_combat_role = TRUE

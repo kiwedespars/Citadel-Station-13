@@ -147,8 +147,8 @@
 /obj/item/reagent_containers/hypospray/medipen/ekit
 	name = "emergency first-aid autoinjector"
 	desc = "An epinephrine medipen with extra coagulant and antibiotics to help stabilize bad cuts and burns."
-	icon_state = "firstaid"
-	item_state = "firstaid"
+	icon_state = "healthpen"
+	item_state = "healthpen"
 	volume = 15
 	amount_per_transfer_from_this = 15
 	list_reagents = list(/datum/reagent/medicine/epinephrine = 12, /datum/reagent/medicine/coagulant = 2.5, /datum/reagent/medicine/spaceacillin = 0.5)
@@ -370,7 +370,7 @@
 	quickload = TRUE
 	penetrates = TRUE
 
-/obj/item/hypospray/mkii/Initialize()
+/obj/item/hypospray/mkii/Initialize(mapload)
 	. = ..()
 	if(!spawnwithvial)
 		update_icon()
@@ -491,7 +491,7 @@
 		return
 
 	var/fp_verb = mode == HYPO_SPRAY ? "spray" : "inject"
-	var/method = mode == HYPO_SPRAY ? TOUCH : INJECT
+	var/method = mode == HYPO_SPRAY ? PATCH : INJECT	//Medsprays use patch when spraying, feels like an inconsistancy here.
 
 	if(L != user)
 		L.visible_message("<span class='danger'>[user] is trying to [fp_verb] [L] with [src]!</span>", \

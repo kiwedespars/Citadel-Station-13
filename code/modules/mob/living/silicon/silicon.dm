@@ -50,7 +50,10 @@
 
 	typing_indicator_state = /obj/effect/overlay/typing_indicator/machine
 
-/mob/living/silicon/Initialize()
+	vocal_bark_id = "synth"
+	vocal_pitch_range = 0.1
+
+/mob/living/silicon/Initialize(mapload)
 	. = ..()
 	GLOB.silicon_mobs += src
 	faction += "silicon"
@@ -78,7 +81,7 @@
 	GLOB.silicon_mobs -= src
 	return ..()
 
-/mob/living/silicon/contents_explosion(severity, target)
+/mob/living/silicon/contents_explosion(severity, target, origin)
 	return
 
 /mob/living/silicon/proc/cancelAlarm()
@@ -413,7 +416,7 @@
 	src << browse(dat, "window=airoster")
 	onclose(src, "airoster")
 
-/mob/living/silicon/update_transform()
+/mob/living/silicon/update_transform(do_animate)
 	var/matrix/ntransform = matrix(transform) //aka transform.Copy()
 	var/changed = 0
 	if(resize != RESIZE_DEFAULT_SIZE)

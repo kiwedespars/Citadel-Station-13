@@ -956,7 +956,7 @@
 	illustration = "fruit"
 	var/theme_name
 
-/obj/item/storage/box/ingredients/Initialize()
+/obj/item/storage/box/ingredients/Initialize(mapload)
 	. = ..()
 	if(theme_name)
 		name = "[name] ([theme_name])"
@@ -1279,7 +1279,7 @@
 	var/expiration_date_min = 2300
 	var/expiration_date_max = 2700
 
-/obj/item/storage/box/mre/Initialize()
+/obj/item/storage/box/mre/Initialize(mapload)
 	. = ..()
 	if(can_expire)
 		expiration_date = rand(expiration_date_min, expiration_date_max)
@@ -1290,9 +1290,9 @@
 			var/toxic_risk = min(round(spess_current_year - expiration_date * 0.01), 1)
 			for(var/obj/item/reagent_containers/food/snacks/S in contents)
 				if(prob(gross_risk))
-					ENABLE_BITFIELD(S.foodtype, GROSS)
+					S.foodtype |= GROSS
 				if(prob(toxic_risk))
-					ENABLE_BITFIELD(S.foodtype, TOXIC)
+					S.foodtype |= TOXIC
 
 /obj/item/storage/box/mre/menu1
 	name = "\improper Nanotrasen MRE Ration Kit Menu 1"

@@ -1,7 +1,7 @@
 /datum/job/rd
 	title = "Research Director"
 	flag = RD_JF
-//	auto_deadmin_role_flags = DEADMIN_POSITION_HEAD
+	auto_deadmin_role_flags = DEADMIN_POSITION_HEAD
 	department_head = list("Captain")
 	department_flag = MEDSCI
 	head_announce = list(RADIO_CHANNEL_SCIENCE)
@@ -63,4 +63,4 @@
 	mask = /obj/item/clothing/mask/breath
 	suit = /obj/item/clothing/suit/space/hardsuit/rd
 	suit_store = /obj/item/tank/internals/oxygen
-	internals_slot = SLOT_S_STORE
+	internals_slot = ITEM_SLOT_SUITSTORE

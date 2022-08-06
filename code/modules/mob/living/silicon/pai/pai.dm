@@ -95,7 +95,7 @@
 	GLOB.pai_list -= src
 	return ..()
 
-/mob/living/silicon/pai/Initialize()
+/mob/living/silicon/pai/Initialize(mapload)
 	var/obj/item/paicard/P = loc
 	START_PROCESSING(SSfastprocess, src)
 	GLOB.pai_list += src
@@ -143,7 +143,7 @@
 	custom_holoform.Grant(src)
 	emitter_next_use = world.time + 10 SECONDS
 
-/mob/living/silicon/pai/deployed/Initialize()
+/mob/living/silicon/pai/deployed/Initialize(mapload)
 	. = ..()
 	fold_out(TRUE)
 
@@ -152,7 +152,7 @@
 	if(possible_chassis[chassis])
 		AddElement(/datum/element/mob_holder, chassis, 'icons/mob/pai_item_head.dmi', 'icons/mob/pai_item_rh.dmi', 'icons/mob/pai_item_lh.dmi', ITEM_SLOT_HEAD)
 
-/mob/living/silicon/pai/BiologicalLife(seconds, times_fired)
+/mob/living/silicon/pai/BiologicalLife(delta_time, times_fired)
 	if(!(. = ..()))
 		return
 	if(hacking)
@@ -321,6 +321,17 @@
 		pai.radio.attackby(W, user, params)
 	else
 		to_chat(user, "Encryption Key ports not configured.")
+
+/obj/item/paicard/emag_act(mob/user) // Emag to wipe the master DNA and supplemental directive
+	. = ..()
+	if(!pai)
+		return
+	to_chat(user, "<span class='notice'>You override [pai]'s directive system, clearing its master string and supplied directive.</span>")
+	to_chat(pai, "<span class='danger'>Warning: System override detected, check directive sub-system for any changes.'</span>")
+	log_game("[key_name(user)] emagged [key_name(pai)], wiping their master DNA and supplemental directive.")
+	pai.master = null
+	pai.master_dna = null
+	pai.laws.supplied[1] = "None." // Sets supplemental directive to this
 
 /mob/living/silicon/pai/proc/short_radio()
 	if(radio_short_timerid)

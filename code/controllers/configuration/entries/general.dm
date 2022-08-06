@@ -39,16 +39,6 @@
 
 /datum/config_entry/flag/show_irc_name
 
-/datum/config_entry/flag/irc_announce_new_game
-	deprecated_by = /datum/config_entry/string/chat_announce_new_game
-
-/datum/config_entry/flag/irc_announce_new_game/DeprecationUpdate(value)
-	return ""	//default broadcast
-
-/datum/config_entry/string/chat_announce_new_game
-
-	config_entry_value = null
-
 /datum/config_entry/string/default_view
 	config_entry_value = "15x15"
 
@@ -342,3 +332,16 @@
 /datum/config_entry/number/hard_deletes_overrun_limit
 	default = 0
 	min_val = 0
+
+/datum/config_entry/flag/atmos_equalize_enabled
+	default = FALSE
+
+/datum/config_entry/flag/dynamic_config_enabled
+
+/datum/config_entry/flag/station_name_needs_approval
+
+//ambition start
+/datum/config_entry/number/max_ambitions	// Maximum number of ambitions a mind can store.
+	config_entry_value = 5
+//ambition end
+

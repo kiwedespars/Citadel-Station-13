@@ -44,7 +44,7 @@
 	item_state = "holdingpack"
 	resistance_flags = FIRE_PROOF
 	item_flags = NO_MAT_REDEMPTION
-	armor = list("melee" = 0, "bullet" = 0, "laser" = 0, "energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 60, "acid" = 50)
+	armor = list(MELEE = 0, BULLET = 0, LASER = 0, ENERGY = 0, BOMB = 0, BIO = 0, RAD = 0, FIRE = 60, ACID = 50)
 	component_type = /datum/component/storage/concrete/bluespace/bag_of_holding
 	rad_flags = RAD_PROTECT_CONTENTS | RAD_NO_CONTAMINATE
 
@@ -53,7 +53,6 @@
 	desc = "A satchel that opens into a localized pocket of Blue Space."
 	icon_state = "holdingsat"
 	item_state = "holdingsat"
-	species_exception = list(/datum/species/angel)
 
 /obj/item/storage/backpack/holding/duffel
 	name = "duffel bag of holding"
@@ -190,7 +189,6 @@
 	name = "satchel"
 	desc = "A trendy looking satchel."
 	icon_state = "satchel-norm"
-	species_exception = list(/datum/species/angel) //satchels can be equipped since they are on the side, not back
 
 /obj/item/storage/backpack/satchel/leather
 	name = "leather satchel"
@@ -259,8 +257,8 @@
 /obj/item/storage/backpack/satchel/bone
 	name = "bone satchel"
 	desc = "A grotesque satchel made of sinews and bones."
-	icon = 'icons/obj/mining.dmi'
-	icon_state = "goliath_saddle"
+	icon_state = "satchel-bone"
+	item_state = "satchel-bone"
 	slot_flags = ITEM_SLOT_BACK
 
 /obj/item/storage/backpack/satchel/bone/ComponentInitialize()
@@ -285,7 +283,7 @@
 	level = 1
 	component_type = /datum/component/storage/concrete/secret_satchel
 
-/obj/item/storage/backpack/satchel/flat/Initialize()
+/obj/item/storage/backpack/satchel/flat/Initialize(mapload)
 	. = ..()
 	SSpersistence.new_secret_satchels += src
 
@@ -318,7 +316,7 @@
 	var/list/reward_all_of_these = list() //use paths!
 	var/revealed = FALSE
 
-/obj/item/storage/backpack/satchel/flat/secret/Initialize()
+/obj/item/storage/backpack/satchel/flat/secret/Initialize(mapload)
 	. = ..()
 
 	if(isfloorturf(loc) && !isplatingturf(loc))
@@ -657,3 +655,9 @@
 	desc = "Worn by snails as armor and storage compartment."
 	icon_state = "snailshell"
 	item_state = "snailshell"
+
+/obj/item/storage/backpack/henchmen
+	name = "wings"
+	desc = "Granted to the henchmen who deserve it. This probably doesn't include you."
+	icon_state = "henchmen"
+	item_state = "henchmen"

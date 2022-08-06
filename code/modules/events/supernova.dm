@@ -1,8 +1,8 @@
 /datum/round_event_control/supernova
 	name = "Supernova"
 	typepath = /datum/round_event/supernova
-	weight = 10
-	max_occurrences = 2
+	weight = 5
+	max_occurrences = 1
 	min_players = 2
 
 /datum/round_event/supernova
@@ -58,7 +58,7 @@
 		supernova.power_mod = min(supernova.power_mod*1.2, power)
 	if(activeFor > endWhen-10)
 		supernova.power_mod /= 4
-	if(prob(round(supernova.power_mod)) && prob(3) && storm_count < 5 && !SSweather.get_weather_by_type(/datum/weather/rad_storm))
+	if(prob(round(supernova.power_mod)) && prob(5-storm_count) && !SSweather.get_weather_by_type(/datum/weather/rad_storm))
 		SSweather.run_weather(/datum/weather/rad_storm/supernova)
 		storm_count++
 
@@ -73,6 +73,6 @@
 	weather_duration_lower = 50
 	weather_duration_upper = 100
 	telegraph_duration = 200
-	radiation_intensity = 1000
+	radiation_intensity = 500
 	weather_sound = null
 	telegraph_message = "<span class='userdanger'>The air begins to grow very warm!</span>"

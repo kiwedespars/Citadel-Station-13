@@ -41,7 +41,7 @@
 
 	///Will objects this area be needing power?
 	var/requires_power = TRUE
-	/// This gets overridden to 1 for space in area/Initialize().
+	/// This gets overridden to 1 for space in area/Initialize(mapload).
 	var/always_unpowered = FALSE
 
 	var/power_equip = TRUE
@@ -50,7 +50,12 @@
 
 	var/has_gravity = FALSE
 
-	var/parallax_movedir = 0
+	/// Parallax moving?
+	var/parallax_moving = FALSE
+	/// Parallax move speed - 0 to disable
+	var/parallax_move_speed = 0
+	/// Parallax move dir - degrees clockwise from north
+	var/parallax_move_angle = 0
 
 	var/list/ambientsounds = GENERIC
 	flags_1 = CAN_BE_DIRTY_1
@@ -118,6 +123,10 @@
 
 	/// Color on minimaps, if it's null (which is default) it makes one at random.
 	var/minimap_color
+
+	var/minimap_color2 // if this isn't null, then this will show as a checkerboard pattern mixed in with the above. works even if the above is null (for better or worse)
+
+	var/minimap_show_walls = TRUE
 
 /**
   * These two vars allow for multiple unique areas to be linked to a master area
@@ -192,7 +201,7 @@ GLOBAL_LIST_EMPTY(teleportlocs)
  *
  * returns INITIALIZE_HINT_LATELOAD
  */
-/area/Initialize()
+/area/Initialize(mapload)
 	icon_state = ""
 	map_name = name // Save the initial (the name set in the map) name of the area.
 	canSmoothWithAreas = typecacheof(canSmoothWithAreas)
@@ -319,38 +328,38 @@ GLOBAL_LIST_EMPTY(teleportlocs)
  *
  * Sends to all ai players, alert consoles, drones and alarm monitor programs in the world
  */
-/area/proc/poweralert(state, obj/source)
+/area/proc/poweralert(set_alarm, obj/source)
 	if (area_flags & NO_ALERTS)
 		return
-	if (state != poweralm)
-		poweralm = state
+	if (set_alarm != poweralm)
+		poweralm = set_alarm
 		if(istype(source))	//Only report power alarms on the z-level where the source is located.
 			for (var/item in GLOB.silicon_mobs)
 				var/mob/living/silicon/aiPlayer = item
-				if (state == 1)
-					aiPlayer.cancelAlarm("Power", src, source)
-				else
+				if (set_alarm)
 					aiPlayer.triggerAlarm("Power", src, cameras, source)
+				else
+					aiPlayer.cancelAlarm("Power", src, source)
 
 			for (var/item in GLOB.alert_consoles)
 				var/obj/machinery/computer/station_alert/a = item
-				if(state == 1)
-					a.cancelAlarm("Power", src, source)
-				else
+				if (set_alarm)
 					a.triggerAlarm("Power", src, cameras, source)
+				else
+					a.cancelAlarm("Power", src, source)
 
 			for (var/item in GLOB.drones_list)
 				var/mob/living/simple_animal/drone/D = item
-				if(state == 1)
-					D.cancelAlarm("Power", src, source)
-				else
+				if (set_alarm)
 					D.triggerAlarm("Power", src, cameras, source)
+				else
+					D.cancelAlarm("Power", src, source)
 			for(var/item in GLOB.alarmdisplay)
 				var/datum/computer_file/program/alarm_monitor/p = item
-				if(state == 1)
-					p.cancelAlarm("Power", src, source)
-				else
+				if (set_alarm)
 					p.triggerAlarm("Power", src, cameras, source)
+				else
+					p.cancelAlarm("Power", src, source)
 
 /area/proc/atmosalert(danger_level, obj/source)
 	if (area_flags & NO_ALERTS)

@@ -258,15 +258,24 @@
 
 	send2adminchat("Server", "A round of [mode.name] just ended[mode_result == "undefined" ? "." : " with a [mode_result]."] Survival rate: [survival_rate]")
 
-	if(LAZYLEN(GLOB.round_end_notifiees))
-		world.TgsTargetedChatBroadcast("[GLOB.round_end_notifiees.Join(", ")] the round has ended.", FALSE)
-
 	if(length(CONFIG_GET(keyed_list/cross_server)))
 		send_news_report()
 
 	//tell the nice people on discord what went on before the salt cannon happens.
-	world.TgsTargetedChatBroadcast("The current round has ended. Please standby for your shift interlude Nanotrasen News Network's report!", FALSE)
-	world.TgsTargetedChatBroadcast(send_news_report(), FALSE)
+	if(CONFIG_GET(string/chat_roundend_notice_tag))
+		var/broadcastmessage = ""
+
+		if(LAZYLEN(GLOB.round_end_notifiees))
+			broadcastmessage += "[GLOB.round_end_notifiees.Join(", ")], "
+
+
+		broadcastmessage += "[((broadcastmessage == "") ? "the" : "The")] current round has ended. Please standby for your shift interlude Nanotrasen News Network's report!\n"
+		broadcastmessage += "```\n[send_news_report()]\n```"
+
+		if(CONFIG_GET(string/chat_reboot_role))
+			broadcastmessage += "\n\n<@&[CONFIG_GET(string/chat_reboot_role)]>, the server will reboot shortly!"
+
+		send2chat(broadcastmessage, CONFIG_GET(string/chat_roundend_notice_tag))
 
 	CHECK_TICK
 
@@ -351,6 +360,7 @@
 /datum/controller/subsystem/ticker/proc/survivor_report(popcount)
 	var/list/parts = list()
 	var/station_evacuated = EMERGENCY_ESCAPED_OR_ENDGAMED
+	var/datum/game_mode/dynamic/mode = SSticker.mode
 
 	if(GLOB.round_id)
 		var/statspage = CONFIG_GET(string/roundstatsurl)
@@ -369,6 +379,8 @@
 
 	parts += "[FOURSPACES]Shift Duration: <B>[DisplayTimeText(world.time - SSticker.round_start_time)]</B>"
 	parts += "[FOURSPACES]Station Integrity: <B>[mode.station_was_nuked ? "<span class='redtext'>Destroyed</span>" : "[popcount["station_integrity"]]%"]</B>"
+	if(mode.station_was_nuked && SSevents.holidays && SSevents.holidays[PRIDE_MONTH])
+		parts += "[FOURSPACES]Gender revealed: <B>[pick(500; "Male", 500; "Female", "Bigender", "Agender", "Demiboy", "Demigirl", "Genderfluid", "Pangender", "Xenogender", "Clown", 50; "What", 50; "Oh no.", 50; "Excuse me?")]</B>"
 	var/total_players = GLOB.joined_player_list.len
 	if(total_players)
 		parts+= "[FOURSPACES]Total Population: <B>[total_players]</B>"
@@ -383,27 +395,14 @@
 			//ignore this comment, it fixes the broken sytax parsing caused by the " above
 			else
 				parts += "[FOURSPACES]<i>Nobody died this shift!</i>"
-	var/avg_threat = SSactivity.get_average_threat()
-	var/max_threat = SSactivity.get_max_threat()
-	parts += "[FOURSPACES]Threat at round end: [SSactivity.current_threat]"
-	parts += "[FOURSPACES]Average threat: [avg_threat]"
-	parts += "[FOURSPACES]Max threat: [max_threat]"
 	if(istype(SSticker.mode, /datum/game_mode/dynamic))
-		var/datum/game_mode/dynamic/mode = SSticker.mode
-		mode.update_playercounts() // ?
-		parts += "[FOURSPACES]Target threat: [mode.threat_level]"
+		parts += "[FOURSPACES]Initial threat level: [mode.threat_level]"
+		parts += "[FOURSPACES]Initial roundstart threat: [mode.initial_round_start_budget]"
+		parts += "[FOURSPACES]Roundstart budget after antags: [mode.round_start_budget]"
+		parts += "[FOURSPACES]Midround budget at round end: [mode.mid_round_budget]"
 		parts += "[FOURSPACES]Executed rules:"
 		for(var/datum/dynamic_ruleset/rule in mode.executed_rules)
 			parts += "[FOURSPACES][FOURSPACES][rule.ruletype] - <b>[rule.name]</b>: -[rule.cost + rule.scaled_times * rule.scaling_cost] threat"
-		parts += "[FOURSPACES]Other threat changes:"
-		for(var/str in mode.threat_log)
-			parts += "[FOURSPACES][FOURSPACES][str]"
-		for(var/entry in mode.threat_tallies)
-			parts += "[FOURSPACES][FOURSPACES][entry] added [mode.threat_tallies[entry]]"
-		SSblackbox.record_feedback("tally","threat",mode.threat_level,"Target threat")
-	SSblackbox.record_feedback("tally","threat",SSactivity.current_threat,"Final Threat")
-	SSblackbox.record_feedback("tally","threat",avg_threat,"Average Threat")
-	SSblackbox.record_feedback("tally","threat",max_threat,"Max Threat")
 	return parts.Join("<br>")
 
 /client/proc/roundend_report_file()
@@ -560,7 +559,7 @@
 	parts += "There were [station_vault] credits collected by crew this shift.<br>"
 	if(total_players > 0)
 		parts += "An average of [station_vault/total_players] credits were collected.<br>"
-		// log_econ("Roundend credit total: [station_vault] credits. Average Credits: [station_vault/total_players]")
+		log_econ("Roundend credit total: [station_vault] credits. Average Credits: [station_vault/total_players]")
 	if(mr_moneybags)
 		parts += "The most affluent crew member at shift end was <b>[mr_moneybags.account_holder] with [mr_moneybags.account_balance]</b> cr!</div>"
 	else
@@ -602,8 +601,8 @@
 	var/list/all_teams = list()
 	var/list/all_antagonists = list()
 
-	// for(var/datum/team/A in GLOB.antagonist_teams)
-	// 	all_teams |= A
+	for(var/datum/team/A in GLOB.antagonist_teams)
+		all_teams |= A
 
 	for(var/datum/antagonist/A in GLOB.antagonists)
 		if(!A.owner)
@@ -636,6 +635,10 @@
 			currrent_category = A.roundend_category
 			previous_category = A
 		result += A.roundend_report()
+//ambition start
+		for(var/count in 1 to LAZYLEN(A.owner.ambitions))
+			result += "<br><B>Ambition #[count]</B>: [A.owner.ambitions[count]]"
+//ambition end
 		result += "<br><br>"
 		CHECK_TICK
 

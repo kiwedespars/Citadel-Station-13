@@ -15,7 +15,7 @@
 	//Bitflags for the job
 	var/flag = NONE //Deprecated
 	var/department_flag = NONE //Deprecated
-//	var/auto_deadmin_role_flags = NONE
+	var/auto_deadmin_role_flags = NONE
 
 	//Players will be allowed to spawn in as jobs that are set to "Station"
 	var/faction = "None"
@@ -62,6 +62,9 @@
 
 	var/list/mind_traits // Traits added to the mind of the mob assigned this job
 	var/list/blacklisted_quirks		//list of quirk typepaths blacklisted.
+
+/// Should this job be allowed to be picked for the bureaucratic error event?
+	var/allow_bureaucratic_error = TRUE
 
 	var/display_order = JOB_DISPLAY_ORDER_DEFAULT
 
@@ -238,7 +241,7 @@
 	var/satchel  = /obj/item/storage/backpack/satchel
 	var/duffelbag = /obj/item/storage/backpack/duffelbag
 
-	var/pda_slot = SLOT_BELT
+	var/pda_slot = ITEM_SLOT_BELT
 
 /datum/outfit/job/pre_equip(mob/living/carbon/human/H, visualsOnly = FALSE, client/preference_source)
 	var/preference_backpack = preference_source?.prefs.backbag

@@ -34,7 +34,7 @@
 	detonation_damage = 60
 	wielded = 1
 
-/obj/item/kinetic_crusher/Initialize()
+/obj/item/kinetic_crusher/Initialize(mapload)
 	. = ..()
 	RegisterSignal(src, COMSIG_TWOHANDED_WIELD, .proc/on_wield)
 	RegisterSignal(src, COMSIG_TWOHANDED_UNWIELD, .proc/on_unwield)
@@ -133,7 +133,7 @@
 				C.total_damage += target_health - L.health //we did some damage, but let's not assume how much we did
 			new /obj/effect/temp_visual/kinetic_blast(get_turf(L))
 			var/backstab_dir = get_dir(user, L)
-			var/def_check = L.getarmor(type = "bomb")
+			var/def_check = L.getarmor(type = BOMB)
 			if((user.dir & backstab_dir) && (L.dir & backstab_dir))
 				if(!QDELETED(C))
 					C.total_damage += detonation_damage + backstab_bonus //cheat a little and add the total before killing it, so certain mobs don't have much lower chances of giving an item
@@ -184,6 +184,7 @@
 	icon_state = "crusher-glaive"
 	item_state = "crusher0-glaive"
 	block_parry_data = /datum/block_parry_data/crusherglaive
+	obj_flags = UNIQUE_RENAME
 	//ideas: altclick that lets you pummel people with the handguard/handle?
 	//parrying functionality?
 
@@ -228,6 +229,48 @@
 /obj/item/kinetic_crusher/glaive/update_icon_state()
 	item_state = "crusher[wielded]-glaive" // this is not icon_state and not supported by 2hcomponent
 
+/obj/item/kinetic_crusher/glaive/bone
+	name = "necropolis bone glaive"
+	desc = "Tribals trying to immitate technology have spent a long time to somehow assemble bits and pieces to work together just like the real thing. \
+	Although it does take a lot of effort and luck to create, it was a success."
+	icon_state = "crusher-bone"
+	item_state = "crusher0-bone"
+
+/obj/item/kinetic_crusher/glaive/bone/update_icon_state()
+	item_state = "crusher[wielded]-bone"
+
+/obj/item/kinetic_crusher/glaive/gauntlets
+	name = "proto-kinetic gauntlets"
+	desc = "A pair of scaled-down proto-kinetic crusher destabilizer modules shoved into gauntlets and greaves, often used by \
+	those who wish to spit in the eyes of God. Sacrifices outright damage for \
+	a reliance on backstabs and the ability to give fauna concussions on a parry."
+	attack_verb = list("pummeled", "punched", "jabbed", "hammer-fisted", "uppercut", "slammed")
+	hitsound = 'sound/weapons/resonator_blast.ogg'
+	sharpness = SHARP_NONE // use your survival dagger or smth
+	icon_state = "crusher-hands"
+	item_state = "crusher0-fist"
+	unique_reskin = list("Gauntlets" = "crusher-hands",
+						"Fingerless" = "crusher-hands-bare")
+	detonation_damage = 45 // 60 on wield, compared to normal crusher's 70
+	backstab_bonus = 70 // 130 on backstab though
+
+/obj/item/kinetic_crusher/glaive/gauntlets/ComponentInitialize()
+	. = ..()
+	AddComponent(/datum/component/two_handed, force_unwielded=0, force_wielded=15)
+
+/obj/item/kinetic_crusher/glaive/gauntlets/active_parry_reflex_counter(mob/living/owner, atom/object, damage, attack_text, attack_type, armour_penetration, mob/attacker, def_zone, list/return_list, parry_efficiency, list/effect_text)
+	. = ..()
+	if(isliving(attacker))
+		var/mob/living/liv_atk = attacker
+		if(liv_atk.mob_size >= MOB_SIZE_LARGE && !ismegafauna(liv_atk))
+			liv_atk.apply_status_effect(STATUS_EFFECT_GAUNTLET_CONC)
+
+/obj/item/kinetic_crusher/glaive/gauntlets/update_icon_state()
+	if(current_skin == "Fingerless")
+		item_state = "crusher[wielded]-fistbare"
+	else
+		item_state = "crusher[wielded]-fist"
+
 //destablizing force
 /obj/item/projectile/destabilizer
 	name = "destabilizing force"
@@ -235,7 +278,7 @@
 	nodamage = TRUE
 	damage = 0 //We're just here to mark people. This is still a melee weapon.
 	damage_type = BRUTE
-	flag = "bomb"
+	flag = BOMB
 	range = 6
 	log_override = TRUE
 	var/obj/item/kinetic_crusher/hammer_synced
